@@ -88,7 +88,6 @@ button {
 .title {
   color: #f8f8f8;
   font-size: 36px;
-  /* font-weight: bolder; */
   text-align: center;
   flex-grow: 2;
   margin: 0;
@@ -132,18 +131,6 @@ button {
   font-family: "Franklin Gothic Medium", Arial, sans-serif;
 }
 
-.absent {
-  background-color: #3a3a3c;
-}
-
-.present {
-  background-color: #b59f3b;
-}
-
-.correct {
-  background-color: #538d4e;
-}
-
 @keyframes vertical-flip {
   from {
     background-color: #121213;
@@ -157,6 +144,7 @@ button {
   }
   to {
     transform: scaleY(1);
+    background-color: var(--reveal-colour);
   }
 }
 

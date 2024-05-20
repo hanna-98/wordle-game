@@ -14,10 +14,11 @@ let history = [];
 let currentGuess = "";
 
 const keys = document.querySelectorAll(".keyboard-row button");
-
 const rows = document.querySelectorAll(".row");
-let currentRow = rows[history.length];
-const currentCol = currentRow.children;
+let turn = 0;
+let currentRow;
+
+let currentCol;
 
 const keyboardEvent = () => {
   for (let i = 0; i < keys.length; i++) {
@@ -30,6 +31,9 @@ const keyboardEvent = () => {
         console.log("in backspace");
         handleBackspace();
       } else if (currentGuess.length < 5 && currentGuess.length >= 0) {
+        currentRow = rows[turn];
+        currentCol = currentRow.children;
+        console.log("curr col: ", currentCol);
         currentCol[currentGuess.length].innerHTML = key.toUpperCase();
         currentGuess += key;
         console.log("current guess: ", currentGuess);
@@ -40,32 +44,19 @@ const keyboardEvent = () => {
 keyboardEvent();
 
 const handleBackspace = () => {
+  // uncaught error when backspace icon is clicked but not the space around it...
   console.log("BACKSPACE");
   console.log("current guess: ", currentGuess);
-  if (currentGuess && currentGuess.length > 0) {
+  if (currentGuess.length > 0) {
     currentGuess = currentGuess.slice(0, -1);
     currentCol[currentGuess.length].innerHTML = "";
   }
-  console.log("current guess: ", currentGuess);
 };
 
 const isValidWord = (word) => dictionary.includes(word);
 
 const handleSubmit = () => {
   console.log("ENTER");
-  if (currentGuess === secretWord) {
-    let arr = Array.from(currentRow.children);
-    currentRow.className = "filled-row row";
-    console.log("win");
-    arr.forEach((tile) => {
-      tile.className = "correct letter"; // not working as expected
-      console.log("tile: ", tile);
-      console.log("index: ", arr.indexOf(tile));
-      tile.style.animation = `750ms ${
-        arr.indexOf(tile) * 100 + 100
-      }ms vertical-flip`;
-    });
-  }
   if (currentGuess.length < 5) {
     console.log("not enough letters");
     shake();
@@ -74,35 +65,45 @@ const handleSubmit = () => {
     shake();
   } else {
     revealTiles();
+    if (currentGuess === secretWord) {
+      console.log("WIN");
+    }
     history.push(currentGuess);
-    console.log("current row: ", currentRow);
-    console.log("history: ", history);
+    currentGuess = "";
+    turn++;
   }
 };
 
 const revealTiles = () => {
+  currentRow.className = "row filled-row";
   let arr = Array.from(currentRow.children);
   console.log(arr);
   arr.forEach((tile) => {
-    tile.style.animation = "vertical-flip 1s";
-    if (
-      arr[arr.indexOf(tile)].innerHTML ===
-      secretWord[arr.indexOf(tile.innerHTML)]
-    ) {
-      tile.className = "correct";
-      console.log("correct");
+    tile.style.animation = "none";
+    tile.offsetHeight;
+    tile.style.animation = `750ms ${
+      arr.indexOf(tile) * 100 + 100
+    }ms vertical-flip`;
+    tile.style.animationFillMode = "both";
+  });
+  arr.forEach((tile) => {
+    if (tile.innerHTML.toLowerCase() === secretWord[arr.indexOf(tile)]) {
+      tile.className = "correct letter";
+      tile.style.setProperty("--reveal-colour", "#538d4e");
+    } else if (secretWord.includes(tile.innerHTML.toLowerCase())) {
+      tile.className = "present letter";
+      tile.style.setProperty("--reveal-colour", "#b59f3b");
+    } else {
+      tile.className = "absent letter";
+      tile.style.setProperty("--reveal-colour", "#3a3a3c");
     }
   });
+  currentRow = rows[turn];
+  currentCol = currentRow.children;
 };
 
 const shake = () => {
-  currentRow.style.animation = "shake 0.25s"; // only works on the first submit :/
+  currentRow.style.animation = "none";
+  currentRow.offsetHeight;
+  currentRow.style.animation = "shake 0.25s";
 };
-
-// variables: secretWord (const), currentGuess, history (array of guessed words), dictionary (const)
-// click events: letter guess (on clicking key), word guess (on clicking enter key)
-// to extend consider using wordle api
-
-// onclick for all letters -> concatenate with currentGuess if length < 5
-// onclick for backspace -> slice currentGuess
-// onclick for enter -> if currentGuess length < 5 -> shake + "not enough letters" or if not valid "not a word"
