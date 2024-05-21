@@ -24,18 +24,14 @@ const keyboardEvent = () => {
     keys[i].onclick = ({ target }) => {
       const key = target.getAttribute("data-key");
       if (key === "enter") {
-        console.log("in enter");
         handleSubmit();
       } else if (key === "backspace") {
-        console.log("in backspace");
         handleBackspace();
       } else if (currentGuess.length < 5 && currentGuess.length >= 0) {
         currentRow = rows[turn];
         currentCol = currentRow.children;
-        console.log("curr col: ", currentCol);
         currentCol[currentGuess.length].innerHTML = key.toUpperCase();
         currentGuess += key;
-        console.log("current guess: ", currentGuess);
       }
     };
   }
@@ -43,8 +39,6 @@ const keyboardEvent = () => {
 keyboardEvent();
 
 const handleBackspace = () => {
-  console.log("BACKSPACE");
-  console.log("current guess: ", currentGuess);
   if (currentGuess.length > 0) {
     currentGuess = currentGuess.slice(0, -1);
     currentCol[currentGuess.length].innerHTML = "";
@@ -54,7 +48,6 @@ const handleBackspace = () => {
 const isValidWord = (word) => dictionary.includes(word);
 
 const handleSubmit = () => {
-  console.log("ENTER");
   if (currentGuess.length < 5) {
     console.log("not enough letters");
     shake();
@@ -75,7 +68,6 @@ const handleSubmit = () => {
 const revealTiles = () => {
   currentRow.className = "row filled-row";
   let arr = Array.from(currentRow.children);
-  console.log(arr);
   arr.forEach((tile) => {
     tile.style.animation = "none";
     tile.offsetHeight;
@@ -85,13 +77,14 @@ const revealTiles = () => {
     tile.style.animationFillMode = "both";
   });
   arr.forEach((tile) => {
-    if (tile.innerHTML.toLowerCase() === secretWord[arr.indexOf(tile)]) {
-      tile.style.setProperty("--reveal-colour", "#538d4e");
-    } else if (secretWord.includes(tile.innerHTML.toLowerCase())) {
-      // && hasn't already been used
-      tile.style.setProperty("--reveal-colour", "#b59f3b");
-    } else {
+    if (!secretWord.includes(tile.innerHTML.toLowerCase())) {
       tile.style.setProperty("--reveal-colour", "#3a3a3c");
+    } else {
+      if (secretWord[arr.indexOf(tile)] === tile.innerHTML.toLowerCase()) {
+        tile.style.setProperty("--reveal-colour", "#538d4e");
+      } else {
+        tile.style.setProperty("--reveal-colour", "#b59f3b");
+      }
     }
   });
   currentRow = rows[turn];
