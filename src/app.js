@@ -17,7 +17,6 @@ const keys = document.querySelectorAll(".keyboard-row button");
 const rows = document.querySelectorAll(".row");
 let turn = 0;
 let currentRow;
-
 let currentCol;
 
 const keyboardEvent = () => {
@@ -44,7 +43,6 @@ const keyboardEvent = () => {
 keyboardEvent();
 
 const handleBackspace = () => {
-  // uncaught error when backspace icon is clicked but not the space around it...
   console.log("BACKSPACE");
   console.log("current guess: ", currentGuess);
   if (currentGuess.length > 0) {
@@ -88,13 +86,11 @@ const revealTiles = () => {
   });
   arr.forEach((tile) => {
     if (tile.innerHTML.toLowerCase() === secretWord[arr.indexOf(tile)]) {
-      tile.className = "correct letter";
       tile.style.setProperty("--reveal-colour", "#538d4e");
     } else if (secretWord.includes(tile.innerHTML.toLowerCase())) {
-      tile.className = "present letter";
+      // && hasn't already been used
       tile.style.setProperty("--reveal-colour", "#b59f3b");
     } else {
-      tile.className = "absent letter";
       tile.style.setProperty("--reveal-colour", "#3a3a3c");
     }
   });
